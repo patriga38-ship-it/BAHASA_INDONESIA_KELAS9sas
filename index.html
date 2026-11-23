@@ -1,0 +1,886 @@
+<!DOCTYPE html>
+<html lang="id" translate="no" class="notranslate">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="google" content="notranslate">
+    <title>CBT Sumatif Akhir Semester - Bahasa Indonesia</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Menggunakan Font Awesome untuk Icon -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+            /* Anti-Cheat: Mencegah seleksi teks */
+            user-select: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+        }
+
+        /* Styling Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1; 
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #c1c1c1; 
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #a8a8a8; 
+        }
+
+        #floating-camera {
+            cursor: grab;
+            touch-action: none;
+        }
+        #floating-camera:active {
+            cursor: grabbing;
+        }
+
+        /* Animasi Pop-up */
+        @keyframes popIn {
+            0% { transform: scale(0.9); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        .modal-animate {
+            animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+    </style>
+</head>
+<body class="text-gray-800 h-screen w-screen overflow-hidden flex flex-col" oncontextmenu="return false;">
+
+    <!-- ================== MODAL ALERT / CONFIRM ================== -->
+    <!-- Pengganti alert() dan confirm() -->
+    <div id="custom-modal" class="fixed inset-0 bg-black/60 z-[100] hidden items-center justify-center p-4 backdrop-blur-sm">
+        <div class="bg-white rounded-2xl shadow-2xl p-6 w-full max-w-md modal-animate text-center">
+            <div id="modal-icon" class="text-5xl mb-4 text-red-500">
+                <i class="fas fa-exclamation-triangle"></i>
+            </div>
+            <h2 id="modal-title" class="text-2xl font-bold mb-2">Peringatan!</h2>
+            <p id="modal-message" class="text-gray-600 mb-6">Pesan peringatan akan muncul di sini.</p>
+            <div id="modal-buttons" class="flex justify-center gap-3">
+                <button id="modal-btn-cancel" class="hidden px-5 py-2.5 bg-gray-200 text-gray-800 rounded-xl font-medium hover:bg-gray-300 transition">Batal</button>
+                <button id="modal-btn-ok" class="px-5 py-2.5 bg-blue-600 text-white rounded-xl font-medium hover:bg-blue-700 transition w-full">Mengerti</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================== HALAMAN LOGIN ================== -->
+    <div id="login-view" class="view-section flex h-full w-full items-center justify-center p-4 overflow-y-auto">
+        <div class="bg-white p-8 rounded-3xl shadow-xl w-full max-w-md border border-gray-100">
+            <div class="text-center mb-8">
+                <div class="bg-blue-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-graduation-cap text-3xl text-blue-600"></i>
+                </div>
+                <h1 class="text-2xl font-bold text-gray-800">Ujian Sumatif Akhir Semester</h1>
+                <p class="text-gray-500 text-sm mt-1">Mata Pelajaran: Bahasa Indonesia</p>
+            </div>
+
+            <form id="login-form" class="space-y-5">
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-1">Nama Lengkap</label>
+                    <input type="text" id="input-name" required class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition" placeholder="Masukkan nama lengkap">
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-1">Kelas</label>
+                    <select id="input-class" required class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition bg-white">
+                        <option value="" disabled selected>Pilih Kelas</option>
+                        <option value="9 A">9 A</option>
+                        <option value="9 B">9 B</option>
+                        <option value="9 C">9 C</option>
+                        <option value="9 D">9 D</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-1">Token Ujian</label>
+                    <input type="text" id="input-token" required class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition" placeholder="Masukkan token">
+                    <p class="text-xs text-gray-400 mt-1">Gunakan token: <strong>12345</strong></p>
+                </div>
+                <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3.5 rounded-xl transition shadow-lg shadow-blue-200 mt-4">
+                    Masuk ke Persiapan
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- ================== HALAMAN PERSIAPAN ================== -->
+    <div id="prep-view" class="view-section hidden flex h-full w-full items-center justify-center p-4 overflow-y-auto">
+        <div class="bg-white p-8 rounded-3xl shadow-xl w-full max-w-lg border border-gray-100 text-center">
+            <h2 class="text-2xl font-bold text-gray-800 mb-2">Persiapan Ujian</h2>
+            <p class="text-gray-500 text-sm mb-6">Aplikasi ini membutuhkan akses Kamera dan Mikrofon untuk sistem proctoring (Anti-Curang).</p>
+            
+            <div id="video-preview-container" class="w-full aspect-video bg-gray-200 rounded-2xl mb-6 overflow-hidden relative border-2 border-dashed border-gray-300">
+                <video id="prep-video" autoplay muted playsinline class="w-full h-full object-cover hidden"></video>
+                <div id="camera-placeholder" class="absolute inset-0 flex flex-col items-center justify-center text-gray-400">
+                    <i class="fas fa-camera text-4xl mb-2"></i>
+                    <span class="text-sm">Menunggu Akses Kamera...</span>
+                </div>
+            </div>
+
+            <div class="bg-yellow-50 text-yellow-800 p-4 rounded-xl text-left text-sm mb-6 border border-yellow-200">
+                <strong><i class="fas fa-info-circle mr-1"></i> Peraturan Penting:</strong>
+                <ul class="list-disc pl-5 mt-2 space-y-1">
+                    <li>Jangan keluar dari layar ujian atau berpindah tab.</li>
+                    <li>Batas peringatan pelanggaran adalah 3 kali.</li>
+                    <li>Sistem akan otomatis merekam wajah selama ujian.</li>
+                </ul>
+            </div>
+
+            <button id="btn-request-cam" class="w-full bg-gray-800 hover:bg-gray-900 text-white font-bold py-3.5 rounded-xl transition shadow-lg mb-3">
+                Izinkan Kamera & Mikrofon
+            </button>
+            
+            <button id="btn-start-exam" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3.5 rounded-xl transition shadow-lg hidden">
+                Mulai Ujian Sekarang
+            </button>
+        </div>
+    </div>
+
+    <!-- ================== HALAMAN UJIAN ================== -->
+    <div id="exam-view" class="view-section hidden flex h-full w-full flex-col relative bg-white">
+        
+        <!-- Header Ujian -->
+        <header class="bg-white shadow-sm border-b px-4 py-3 flex justify-between items-center z-10 shrink-0">
+            <div class="flex flex-col">
+                <span class="font-bold text-gray-800 truncate max-w-[150px] md:max-w-xs" id="display-name">Nama Peserta</span>
+                <span class="text-xs text-gray-500" id="display-class">Kelas 9</span>
+            </div>
+            
+            <div class="flex items-center gap-3">
+                <div class="flex flex-col items-end">
+                    <span class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Sisa Waktu</span>
+                    <span id="timer-display" class="font-bold text-lg text-blue-600">90:00</span>
+                </div>
+                <button id="btn-question-list" class="bg-gray-100 hover:bg-gray-200 text-gray-800 w-10 h-10 rounded-lg flex items-center justify-center transition">
+                    <i class="fas fa-th"></i>
+                </button>
+            </div>
+        </header>
+
+        <!-- Area Konten Ujian (Scrollable) -->
+        <main class="flex-1 overflow-y-auto p-4 md:p-8 pb-6 relative">
+            <div class="max-w-3xl mx-auto">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-xl font-bold text-gray-800">Soal No. <span id="current-question-num">1</span></h3>
+                    <div class="text-sm bg-red-100 text-red-700 px-3 py-1 rounded-full font-medium border border-red-200" id="warning-counter-display">
+                        <i class="fas fa-exclamation-triangle mr-1"></i> Peringatan: 0/3
+                    </div>
+                </div>
+
+                <!-- Teks Soal -->
+                <div id="question-text" class="text-lg text-gray-800 leading-relaxed mb-8 whitespace-pre-line">
+                    Memuat soal...
+                </div>
+
+                <!-- Pilihan Jawaban -->
+                <div id="options-container" class="space-y-3">
+                    <!-- Options injected here -->
+                </div>
+            </div>
+        </main>
+
+        <!-- Sticky Footer untuk Navigasi -->
+        <footer class="bg-white border-t p-4 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)] z-10 shrink-0">
+            <div class="max-w-3xl mx-auto flex justify-between items-center gap-2">
+                <button id="btn-prev" class="flex-1 md:flex-none px-4 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl font-semibold transition disabled:opacity-50 flex items-center justify-center gap-2">
+                    <i class="fas fa-arrow-left"></i> <span class="hidden md:inline">Sebelumnya</span>
+                </button>
+                
+                <button id="btn-finish-top" class="hidden md:block px-6 py-3 bg-red-600 hover:bg-red-700 text-white rounded-xl font-bold transition shadow-lg shadow-red-200">
+                    Selesai Ujian
+                </button>
+
+                <button id="btn-next" class="flex-1 md:flex-none px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-semibold transition flex items-center justify-center gap-2 shadow-lg shadow-blue-200">
+                    <span class="hidden md:inline">Selanjutnya</span> <i class="fas fa-arrow-right"></i>
+                </button>
+            </div>
+            <!-- Tombol Selesai Mobile -->
+            <div class="max-w-3xl mx-auto mt-2 md:hidden">
+                <button id="btn-finish-mobile" class="w-full px-6 py-3 bg-red-600 hover:bg-red-700 text-white rounded-xl font-bold transition shadow-lg shadow-red-200">
+                    Selesai Ujian
+                </button>
+            </div>
+        </footer>
+
+        <!-- Modal Daftar Soal (Dropdown Modal) -->
+        <div id="question-modal" class="fixed inset-0 bg-black/50 z-50 hidden flex-col items-end pt-16 pr-4 backdrop-blur-sm">
+            <div class="bg-white rounded-2xl shadow-2xl w-full max-w-sm p-5 modal-animate">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="font-bold text-gray-800">Daftar Soal</h3>
+                    <button id="close-modal" class="text-gray-500 hover:text-gray-800 w-8 h-8 flex items-center justify-center rounded-full bg-gray-100">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                
+                <div class="flex gap-4 text-xs mb-4 pb-4 border-b">
+                    <div class="flex items-center gap-1"><span class="w-3 h-3 rounded-full bg-white border border-gray-300"></span> Belum</div>
+                    <div class="flex items-center gap-1"><span class="w-3 h-3 rounded-full bg-green-500"></span> Terjawab</div>
+                    <div class="flex items-center gap-1"><span class="w-3 h-3 rounded-full bg-blue-500"></span> Aktif</div>
+                </div>
+
+                <div id="question-grid" class="grid grid-cols-5 gap-2 max-h-[60vh] overflow-y-auto p-1">
+                    <!-- Grid kotak nomor soal diisi via JS -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Floating Camera -->
+        <div id="floating-camera" class="fixed top-20 right-4 w-28 h-36 bg-black rounded-xl overflow-hidden shadow-2xl z-40 border-2 border-white ring-4 ring-black/10 flex items-center justify-center">
+            <video id="exam-video" autoplay muted playsinline class="w-full h-full object-cover transform -scale-x-100"></video>
+            <div class="absolute bottom-1 right-1 text-white text-[10px] bg-black/50 px-1 rounded rounded-bl-none">
+                <i class="fas fa-arrows-alt"></i> Drag
+            </div>
+        </div>
+    </div>
+
+    <!-- ================== HALAMAN HASIL ================== -->
+    <div id="result-view" class="view-section hidden flex h-full w-full items-center justify-center p-4 bg-gray-50 overflow-y-auto">
+        <div class="bg-white p-8 rounded-3xl shadow-xl w-full max-w-md border border-gray-100 text-center relative overflow-hidden">
+            <div id="result-loading" class="flex flex-col items-center py-10">
+                <div class="animate-spin rounded-full h-16 w-16 border-b-4 border-blue-600 mb-4"></div>
+                <h3 class="text-xl font-bold text-gray-800">Mengirim Data...</h3>
+                <p class="text-gray-500 text-sm mt-2">Mohon tunggu, jangan tutup aplikasi.</p>
+            </div>
+
+            <div id="result-content" class="hidden">
+                <div id="result-icon-container" class="w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4 bg-green-100 text-green-600">
+                    <i id="result-icon" class="fas fa-check text-4xl"></i>
+                </div>
+                
+                <h2 id="result-title" class="text-2xl font-bold text-gray-800 mb-1">Ujian Selesai!</h2>
+                <p id="result-subtitle" class="text-green-600 font-semibold mb-6">Data berhasil terkirim.</p>
+
+                <div class="bg-gray-50 rounded-2xl p-5 mb-6 text-left border border-gray-100 space-y-2 text-sm">
+                    <div class="flex justify-between"><span class="text-gray-500">Nama:</span> <strong id="res-name">Nama</strong></div>
+                    <div class="flex justify-between"><span class="text-gray-500">Kelas:</span> <strong id="res-class">Kelas</strong></div>
+                    <div class="flex justify-between"><span class="text-gray-500">Status:</span> <strong id="res-status">Selesai Normal</strong></div>
+                    <div class="flex justify-between"><span class="text-gray-500">Terjawab:</span> <strong id="res-answered">50/50</strong></div>
+                    <div class="flex justify-between mt-3 pt-3 border-t text-base"><span class="font-bold text-gray-800">Nilai Akhir:</span> <strong id="res-score" class="text-blue-600 text-xl">100</strong></div>
+                </div>
+
+                <p class="text-xs text-gray-400">Anda dapat menutup tab ini sekarang.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================== JAVASCRIPT ================== -->
+    <script>
+        /**
+         * Konfigurasi & Data Dummy Soal
+         */
+        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxupBOTGBDt3-0O4Gj4VE7ZfiXNd8ojTv1qL20O19YN22sLcY76XkOFc9GyiOxlpgaw/exec"; // <-- PASTE URL APPS SCRIPT ANDA DI SINI
+        const EXAM_TOKEN = "12345";
+        const TOTAL_QUESTIONS = 50;
+        const EXAM_DURATION = 90 * 60; // 90 Menit dalam detik
+        const MAX_WARNINGS = 3;
+
+        // Data Soal dari File Soal_Bahasa_Indonesia_SMP.docx
+        const questionsData = [
+            { id: 1, text: "Apa tujuan utama dari teks deskripsi?", options: ["A. Menjelaskan langkah-langkah", "B. Menggambarkan objek secara rinci", "C. Menceritakan pengalaman masa lalu", "D. Mengajak pembaca melakukan sesuatu"], answer: 1 },
+            { id: 2, text: "Berikut ini yang merupakan ciri teks deskripsi adalah...", options: ["A. Menggunakan kata kerja imperatif", "B. Melibatkan panca indera (penglihatan, pendengaran, dsb)", "C. Memiliki resolusi cerita", "D. Menjelaskan urutan waktu secara kronologis"], answer: 1 },
+            { id: 3, text: "Struktur teks deskripsi yang benar adalah...", options: ["A. Identifikasi - Deskripsi Bagian - Simpulan", "B. Tujuan - Langkah-langkah - Penutup", "C. Orientasi - Peristiwa - Reorientasi", "D. Tesis - Argumentasi - Penegasan Ulang"], answer: 0 },
+            { id: 4, text: "Kalimat manakah yang mengandung cerapan panca indera penglihatan?", options: ["A. Suaranya sangat merdu mendayu-dayu.", "B. Bunga mawar itu berwarna merah merona.", "C. Kopi hitam ini terasa sangat pahit.", "D. Angin malam terasa sangat dingin di kulit."], answer: 1 },
+            { id: 5, text: "Bagian yang berisi nama objek, lokasi, atau gambaran umum dalam teks deskripsi disebut...", options: ["A. Identifikasi", "B. Deskripsi bagian", "C. Simpulan", "D. Orientasi"], answer: 0 },
+            { id: 6, text: "Kalimat yang menggunakan kata sifat (adjektiva) adalah...", options: ["A. Ayah pergi ke kantor naik motor.", "B. Kucing itu memiliki bulu yang sangat lembut.", "C. Budi membaca buku di kamar.", "D. Ibu memasak nasi goreng di dapur."], answer: 1 },
+            { id: 7, text: "'Pantai Kuta adalah salah satu tempat wisata andalan di Bali'. Kalimat tersebut biasanya terdapat pada bagian...", options: ["A. Identifikasi", "B. Deskripsi bagian", "C. Kesimpulan", "D. Reorientasi"], answer: 0 },
+            { id: 8, text: "Apa yang dimaksud dengan deskripsi bagian?", options: ["A. Ringkasan dari seluruh isi teks", "B. Rincian atau detail-detail dari objek yang dideskripsikan", "C. Pendapat pribadi penulis tentang objek", "D. Pengenalan awal dari objek"], answer: 1 },
+            { id: 9, text: "Teks yang berisi gambaran sebuah ruangan kelas yang bersih dan rapi termasuk ke dalam teks...", options: ["A. Narasi", "B. Prosedur", "C. Deskripsi", "D. Eksposisi"], answer: 2 },
+            { id: 10, text: "Kata berimbuhan yang sering muncul pada teks deskripsi tentang keindahan alam adalah...", options: ["A. Menari-nari", "B. Menghijau", "C. Berlari-larian", "D. Terjatuh"], answer: 1 },
+            { id: 11, text: "Teks deskripsi bertujuan agar pembaca...", options: ["A. Melakukan sesuatu sesuai instruksi teks", "B. Mengetahui informasi peristiwa di masa lalu", "C. Seolah-olah melihat, mendengar, atau merasakan objek yang ditulis", "D. Menyetujui pendapat penulis sepenuhnya"], answer: 2 },
+            { id: 12, text: "Penggunaan kata depan 'di' yang menunjukkan tempat yang tepat adalah...", options: ["A. di makan", "B. di sekolah", "C. di buang", "D. di baca"], answer: 1 },
+            { id: 13, text: "Kalimat bermajas personifikasi di bawah ini adalah...", options: ["A. Wajahnya bersinar seperti bulan purnama.", "B. Angin laut membisikkan lagu rindu di telingaku.", "C. Suaranya menggelegar membelah angkasa.", "D. Rumahnya sangat besar bak istana."], answer: 1 },
+            { id: 14, text: "Objek teks deskripsi umumnya bersifat...", options: ["A. Umum", "B. Abstrak", "C. Khusus (Personal)", "D. Khayalan"], answer: 2 },
+            { id: 15, text: "Salah satu unsur kebahasaan teks deskripsi adalah kata rujukan benda. Contohnya...", options: ["A. Ini, itu, tersebut", "B. Dan, atau, tetapi", "C. Karena, sehingga, maka", "D. Ayo, mari, tolong"], answer: 0 },
+            { id: 16, text: "Apa itu sinonim dalam unsur kebahasaan teks deskripsi?", options: ["A. Lawan kata", "B. Persamaan makna kata", "C. Kata ganti orang", "D. Kata depan"], answer: 1 },
+            { id: 17, text: "Kata 'indah' bersinonim dengan kata...", options: ["A. Buruk", "B. Elok", "C. Hancur", "D. Sedih"], answer: 1 },
+            { id: 18, text: "Teks prosedur berfungsi untuk...", options: ["A. Menceritakan kisah nyata pahlawan", "B. Menggambarkan sebuah tempat wisata", "C. Menjelaskan cara membuat atau melakukan sesuatu", "D. Memberikan opini pribadi penulis"], answer: 2 },
+            { id: 19, text: "Struktur teks prosedur umumnya terdiri dari...", options: ["A. Identifikasi - Deskripsi", "B. Tujuan - Alat/Bahan - Langkah-langkah - Penutup", "C. Orientasi - Peristiwa - Reorientasi", "D. Tesis - Argumentasi - Rekomendasi"], answer: 1 },
+            { id: 20, text: "Ciri bahasa teks prosedur banyak menggunakan jenis kalimat...", options: ["A. Interogatif (Tanya)", "B. Deklaratif (Berita)", "C. Imperatif (Perintah)", "D. Persuasif (Bujukan)"], answer: 2 },
+            { id: 21, text: "Berikut ini yang merupakan contoh kata kerja imperatif (perintah) adalah...", options: ["A. Memotong", "B. Potonglah", "C. Terpotong", "D. Pemotongan"], answer: 1 },
+            { id: 22, text: "'Kemudian, aduk rata semua bahan tersebut.' Kata 'kemudian' merupakan...", options: ["A. Konjungsi temporal (urutan waktu)", "B. Konjungsi kausalitas (sebab-akibat)", "C. Kata ganti orang", "D. Kata depan tempat"], answer: 0 },
+            { id: 23, text: "Bagian 'Alat dan Bahan' pada teks prosedur...", options: ["A. Selalu wajib ada di semua jenis teks prosedur", "B. Hanya ada pada teks prosedur cara membuat sesuatu (seperti resep)", "C. Merupakan bagian penutup teks", "D. Berisi opini dan keluhan penulis"], answer: 1 },
+            { id: 24, text: "Contoh kalimat larangan yang benar dalam teks prosedur adalah...", options: ["A. Rebus air hingga mendidih.", "B. Jangan masukkan gula terlalu banyak agar tidak kemanisan.", "C. Tambahkan garam secukupnya saja.", "D. Hidangkan selagi masih hangat."], answer: 1 },
+            { id: 25, text: "Apa yang dimaksud dengan teks prosedur kompleks?", options: ["A. Teks prosedur yang langkah-langkahnya hanya 2-3 langkah saja", "B. Teks prosedur yang langkah-langkahnya rumit, banyak, dan berjenjang", "C. Teks prosedur yang menceritakan pengalaman", "D. Teks prosedur yang berisi deskripsi benda"], answer: 1 },
+            { id: 26, text: "Judul 'Cara Menghidupkan Komputer' termasuk dalam jenis teks prosedur...", options: ["A. Cara membuat sesuatu", "B. Cara memainkan alat", "C. Cara menggunakan atau melakukan sesuatu", "D. Cara kebiasaan hidup"], answer: 2 },
+            { id: 27, text: "Kalimat yang menunjukkan keterangan ukuran yang akurat adalah...", options: ["A. Tambahkan sedikit garam dapur.", "B. Masukkan tepung terigu secukupnya.", "C. Tuangkan air matang sebanyak 200 ml.", "D. Beri gula pasir sebisa mungkin."], answer: 2 },
+            { id: 28, text: "Konjungsi syarat dalam teks prosedur contohnya adalah kata...", options: ["A. Lalu, setelah itu", "B. Jika, apabila", "C. Dan, atau", "D. Tetapi, melainkan"], answer: 1 },
+            { id: 29, text: "Penutup pada teks prosedur biasanya berisi...", options: ["A. Daftar alat dan bahan", "B. Kesimpulan, harapan, atau ucapan selamat mencoba", "C. Langkah pertama pengerjaan", "D. Alasan membuat teks tersebut"], answer: 1 },
+            { id: 30, text: "'Taburkan keju parut di atasnya.' Kalimat tersebut menggunakan keterangan...", options: ["A. Cara", "B. Alat", "C. Tujuan", "D. Tempat"], answer: 3 },
+            { id: 31, text: "Tujuan penggunaan kalimat perintah (imperatif) pada teks prosedur adalah...", options: ["A. Memaksa pembaca bekerja keras", "B. Agar pembaca mengikuti instruksi dengan tepat dan berhasil", "C. Menakut-nakuti pembaca", "D. Membuat teks menjadi lebih panjang"], answer: 1 },
+            { id: 32, text: "'Potong sayuran dengan pisau yang tajam.' Frasa 'dengan pisau yang tajam' adalah keterangan...", options: ["A. Alat", "B. Cara", "C. Waktu", "D. Tujuan"], answer: 0 },
+            { id: 33, text: "'Bungkus rapat adonan agar tidak kering.' Kata 'agar' menunjukkan keterangan...", options: ["A. Alat", "B. Syarat", "C. Tujuan", "D. Akibat"], answer: 2 },
+            { id: 34, text: "Teks prosedur harus disajikan secara...", options: ["A. Acak sesuai selera", "B. Singkat tanpa penjelasan", "C. Sistematis (berurutan dan logis)", "D. Imajinatif dan penuh kiasan"], answer: 2 },
+            { id: 35, text: "Apa pengertian utama dari teks rekon (recount text)?", options: ["A. Teks yang menceritakan kembali peristiwa atau pengalaman masa lalu", "B. Teks yang berisi langkah-langkah memasak", "C. Teks yang menggambarkan keindahan objek wisata", "D. Teks yang mengabarkan berita hari ini"], answer: 0 },
+            { id: 36, text: "Struktur dasar teks rekon yang tepat adalah...", options: ["A. Orientasi - Deskripsi Bagian - Simpulan", "B. Orientasi - Peristiwa (Events) - Reorientasi", "C. Tujuan - Langkah-langkah - Penutup", "D. Identifikasi - Argumentasi - Fakta"], answer: 1 },
+            { id: 37, text: "Bagian yang berisi pengenalan tokoh, waktu, dan tempat terjadinya peristiwa disebut...", options: ["A. Reorientasi", "B. Resolusi", "C. Koda", "D. Orientasi"], answer: 3 },
+            { id: 38, text: "Teks rekon faktual berisi tentang cerita...", options: ["A. Dongeng dan legenda masa lalu", "B. Pengalaman pribadi penulis saat liburan", "C. Kejadian nyata yang bisa dibuktikan, seperti sejarah atau laporan eksperimen", "D. Langkah membuat kerajinan tangan"], answer: 2 },
+            { id: 39, text: "Ciri kebahasaan teks rekon biasanya menggunakan kata kerja bentuk...", options: ["A. Masa depan", "B. Masa lampau", "C. Masa kini", "D. Masa yang tidak menentu"], answer: 1 },
+            { id: 40, text: "Berikut ini yang termasuk konjungsi urutan waktu pada teks rekon adalah...", options: ["A. Karena, sebab, sehingga", "B. Atau, dan, tetapi", "C. Akhirnya, sebelumnya, lalu, kemudian", "D. Jika, kalau, andai"], answer: 2 },
+            { id: 41, text: "Teks rekon pribadi (personal recount) menceritakan...", options: ["A. Sejarah proklamasi bangsa", "B. Kisah hidup pahlawan nasional", "C. Pengalaman yang dialami secara pribadi oleh penulis", "D. Dongeng fabel binatang"], answer: 2 },
+            { id: 42, text: "Bagian reorientasi pada akhir teks rekon berfungsi untuk...", options: ["A. Menjelaskan latar belakang awal kejadian", "B. Memberikan komentar pribadi, kesan, atau kesimpulan penulis terhadap peristiwa", "C. Menyebutkan siapa saja tokohnya", "D. Merinci langkah-langkah peristiwa"], answer: 1 },
+            { id: 43, text: "Kata ganti orang pertama (aku, saya, kami) sangat sering digunakan pada...", options: ["A. Teks rekon faktual", "B. Teks rekon imajinatif", "C. Teks rekon pribadi", "D. Teks laporan observasi"], answer: 2 },
+            { id: 44, text: "Kalimat manakah yang menunjukkan peristiwa masa lampau?", options: ["A. Saya akan pergi ke Jakarta esok hari.", "B. Kami sedang belajar Bahasa Indonesia di kelas.", "C. Liburan semester lalu, keluargaku berlibur ke Pantai Parangtritis.", "D. Ibu memasak sayur lodeh di dapur sekarang."], answer: 2 },
+            { id: 45, text: "Teks biografi pahlawan seperti Ir. Soekarno termasuk ke dalam jenis...", options: ["A. Teks rekon pribadi", "B. Teks rekon faktual (sejarah/biografi)", "C. Teks deskripsi", "D. Teks prosedur"], answer: 1 },
+            { id: 46, text: "Penggunaan frasa keterangan tempat pada teks rekon terdapat pada kalimat...", options: ["A. Ia menangis tersedu-sedu melihat kejadian itu.", "B. Acara perlombaan itu sangat menyenangkan.", "C. Kami sekelas berkumpul di lapangan upacara.", "D. Dua hari yang lalu udara sangat panas."], answer: 2 },
+            { id: 47, text: "Apa perbedaan utama teks rekon dengan cerita fiksi (cerpen)?", options: ["A. Teks rekon harus berdasarkan kejadian nyata, cerpen berdasarkan imajinasi", "B. Cerpen menggunakan alur kronologis, rekon tidak", "C. Teks rekon selalu lebih panjang dari cerpen", "D. Teks rekon tidak menggunakan huruf kapital"], answer: 0 },
+            { id: 48, text: "'Pada tanggal 17 Agustus 1945, Indonesia memproklamasikan kemerdekaannya'. Kalimat ini merupakan contoh kalimat dari teks...", options: ["A. Prosedur", "B. Rekon sejarah (faktual)", "C. Deskripsi", "D. Persuasi"], answer: 1 },
+            { id: 49, text: "Manakah yang BUKAN merupakan jenis dari teks rekon?", options: ["A. Rekon pribadi", "B. Rekon faktual", "C. Rekon persuasif", "D. Rekon imajinatif"], answer: 2 },
+            { id: 50, text: "Dalam menulis teks rekon, penceritaan urutan peristiwa idealnya harus disajikan secara...", options: ["A. Melompat-lompat agar pembaca bingung", "B. Kronologis (berurutan berdasarkan waktu kejadian)", "C. Diawali dari bagian akhir cerita", "D. Berdasarkan urutan abjad"], answer: 1 }
+        ];
+
+        /**
+         * State Variables
+         */
+        let userState = {
+            name: '',
+            kelas: '',
+            answers: new Array(TOTAL_QUESTIONS).fill(null),
+            warnings: 0,
+            status: 'PENDING', // PENDING, EXAM, FINISHED, DISQUALIFIED
+            score: 0
+        };
+        let currentQuestionIndex = 0;
+        let timerInterval;
+        let timeLeft = EXAM_DURATION;
+        let stream = null;
+        let audioCtx, oscillator, gainNode;
+
+        /**
+         * Utility Functions & Custom Modal
+         */
+        function switchView(viewId) {
+            document.querySelectorAll('.view-section').forEach(el => el.classList.add('hidden'));
+            document.getElementById(viewId).classList.remove('hidden');
+        }
+
+        // Custom Modal Logic (replaces alert and confirm)
+        const modal = document.getElementById('custom-modal');
+        const modalTitle = document.getElementById('modal-title');
+        const modalMsg = document.getElementById('modal-message');
+        const modalIcon = document.getElementById('modal-icon');
+        const btnOk = document.getElementById('modal-btn-ok');
+        const btnCancel = document.getElementById('modal-btn-cancel');
+        let modalOkCallback = null;
+
+        function showModal({ title, message, type = 'warning', showCancel = false, okText = 'Mengerti', onOk }) {
+            modalTitle.innerText = title;
+            modalMsg.innerText = message;
+            btnOk.innerText = okText;
+            
+            if(type === 'warning' || type === 'error') {
+                modalIcon.innerHTML = '<i class="fas fa-exclamation-triangle"></i>';
+                modalIcon.className = 'text-5xl mb-4 text-red-500';
+                btnOk.className = 'px-5 py-2.5 bg-red-600 text-white rounded-xl font-medium hover:bg-red-700 transition w-full';
+            } else if(type === 'info') {
+                modalIcon.innerHTML = '<i class="fas fa-info-circle"></i>';
+                modalIcon.className = 'text-5xl mb-4 text-blue-500';
+                btnOk.className = 'px-5 py-2.5 bg-blue-600 text-white rounded-xl font-medium hover:bg-blue-700 transition w-full';
+            } else if (type === 'confirm') {
+                modalIcon.innerHTML = '<i class="fas fa-question-circle"></i>';
+                modalIcon.className = 'text-5xl mb-4 text-yellow-500';
+                btnOk.className = 'px-5 py-2.5 bg-green-600 text-white rounded-xl font-medium hover:bg-green-700 transition w-full';
+            }
+
+            if (showCancel) {
+                btnCancel.classList.remove('hidden');
+                btnOk.classList.remove('w-full');
+                btnOk.classList.add('flex-1');
+            } else {
+                btnCancel.classList.add('hidden');
+                btnOk.classList.add('w-full');
+                btnOk.classList.remove('flex-1');
+            }
+
+            modalOkCallback = onOk;
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function closeModal() {
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+            stopSiren(); // Stop siren if active when modal closes
+        }
+
+        btnOk.addEventListener('click', () => {
+            closeModal();
+            if (modalOkCallback) modalOkCallback();
+        });
+        btnCancel.addEventListener('click', closeModal);
+
+        /**
+         * Anti-Cheat Audio Siren Web API
+         */
+        function playSiren() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+            if(audioCtx.state === 'suspended') audioCtx.resume();
+            
+            if(!oscillator) {
+                oscillator = audioCtx.createOscillator();
+                gainNode = audioCtx.createGain();
+                oscillator.connect(gainNode);
+                gainNode.connect(audioCtx.destination);
+                oscillator.type = 'square';
+                oscillator.start();
+            }
+
+            let now = audioCtx.currentTime;
+            gainNode.gain.cancelScheduledValues(now);
+            gainNode.gain.setValueAtTime(0.5, now);
+            
+            // Wailing effect
+            oscillator.frequency.cancelScheduledValues(now);
+            oscillator.frequency.setValueAtTime(400, now);
+            for(let i=0; i<10; i++) {
+                oscillator.frequency.linearRampToValueAtTime(800, now + i*0.5 + 0.25);
+                oscillator.frequency.linearRampToValueAtTime(400, now + i*0.5 + 0.5);
+            }
+        }
+
+        function stopSiren() {
+            if (gainNode && audioCtx) {
+                gainNode.gain.setTargetAtTime(0, audioCtx.currentTime, 0.015);
+            }
+        }
+
+        /**
+         * Login Handling
+         */
+        document.getElementById('login-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const name = document.getElementById('input-name').value.trim();
+            const kelas = document.getElementById('input-class').value;
+            const token = document.getElementById('input-token').value.trim();
+
+            if (token !== EXAM_TOKEN) {
+                showModal({title: 'Token Salah', message: 'Token ujian yang Anda masukkan tidak valid.', type: 'error'});
+                return;
+            }
+
+            userState.name = name;
+            userState.kelas = kelas;
+            
+            document.getElementById('display-name').innerText = name;
+            document.getElementById('display-class').innerText = `Kelas ${kelas}`;
+            
+            switchView('prep-view');
+        });
+
+        /**
+         * Device Check (Camera & Mic)
+         */
+        document.getElementById('btn-request-cam').addEventListener('click', async () => {
+            try {
+                stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+                const videoPrep = document.getElementById('prep-video');
+                const examVideo = document.getElementById('exam-video');
+                
+                videoPrep.srcObject = stream;
+                examVideo.srcObject = stream;
+                
+                videoPrep.classList.remove('hidden');
+                document.getElementById('camera-placeholder').classList.add('hidden');
+                
+                document.getElementById('btn-request-cam').classList.add('hidden');
+                document.getElementById('btn-start-exam').classList.remove('hidden');
+            } catch (err) {
+                showModal({
+                    title: 'Akses Ditolak', 
+                    message: 'Kamera dan Mikrofon wajib diizinkan untuk memulai ujian!', 
+                    type: 'error'
+                });
+            }
+        });
+
+        /**
+         * Mulai Ujian & Fullscreen
+         */
+        document.getElementById('btn-start-exam').addEventListener('click', async () => {
+            try {
+                // Request Fullscreen
+                if (document.documentElement.requestFullscreen) {
+                    await document.documentElement.requestFullscreen();
+                } else if (document.documentElement.webkitRequestFullscreen) { /* Safari */
+                    await document.documentElement.webkitRequestFullscreen();
+                }
+            } catch (err) {
+                console.warn("Fullscreen API failed", err);
+            }
+
+            userState.status = 'EXAM';
+            switchView('exam-view');
+            initExam();
+        });
+
+        /**
+         * Exam Engine
+         */
+        function initExam() {
+            renderQuestionList();
+            showQuestion(0);
+            
+            // Start Timer
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                updateTimerDisplay();
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    autoSubmit('Waktu Habis');
+                }
+            }, 1000);
+            
+            // Init Audio Context so it's ready (requires user gesture, which this click provides)
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+        }
+
+        function updateTimerDisplay() {
+            const m = Math.floor(timeLeft / 60);
+            const s = timeLeft % 60;
+            document.getElementById('timer-display').innerText = 
+                `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+                
+            if(timeLeft < 300) { // 5 minutes red warning
+                document.getElementById('timer-display').classList.replace('text-blue-600', 'text-red-600');
+                document.getElementById('timer-display').classList.add('animate-pulse');
+            }
+        }
+
+        function renderQuestionList() {
+            const grid = document.getElementById('question-grid');
+            grid.innerHTML = '';
+            for (let i = 0; i < TOTAL_QUESTIONS; i++) {
+                const btn = document.createElement('button');
+                btn.innerText = i + 1;
+                btn.className = `w-10 h-10 rounded-lg flex items-center justify-center font-semibold text-sm transition shadow-sm border ${getBoxClass(i)}`;
+                btn.onclick = () => {
+                    showQuestion(i);
+                    document.getElementById('question-modal').classList.add('hidden');
+                    document.getElementById('question-modal').classList.remove('flex');
+                };
+                grid.appendChild(btn);
+            }
+        }
+
+        function getBoxClass(index) {
+            if (index === currentQuestionIndex) return 'bg-blue-500 text-white border-blue-600';
+            if (userState.answers[index] !== null) return 'bg-green-500 text-white border-green-600';
+            return 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50';
+        }
+
+        function updateQuestionGridStatus() {
+            const btns = document.getElementById('question-grid').children;
+            for(let i=0; i<TOTAL_QUESTIONS; i++){
+                btns[i].className = `w-10 h-10 rounded-lg flex items-center justify-center font-semibold text-sm transition shadow-sm border ${getBoxClass(i)}`;
+            }
+        }
+
+        function showQuestion(index) {
+            currentQuestionIndex = index;
+            const q = questionsData[index];
+            
+            document.getElementById('current-question-num').innerText = index + 1;
+            document.getElementById('question-text').innerText = q.text;
+            
+            const optContainer = document.getElementById('options-container');
+            optContainer.innerHTML = '';
+            
+            q.options.forEach((opt, optIndex) => {
+                const isSelected = userState.answers[index] === optIndex;
+                const optDiv = document.createElement('div');
+                optDiv.className = `p-4 rounded-xl border-2 cursor-pointer transition flex items-center gap-3 ${isSelected ? 'border-blue-500 bg-blue-50' : 'border-gray-200 bg-white hover:border-blue-300'}`;
+                
+                const radio = document.createElement('div');
+                radio.className = `w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 ${isSelected ? 'border-blue-500' : 'border-gray-400'}`;
+                if(isSelected) radio.innerHTML = '<div class="w-2.5 h-2.5 bg-blue-500 rounded-full"></div>';
+
+                const textSpan = document.createElement('span');
+                textSpan.className = 'text-gray-700 text-base';
+                textSpan.innerText = opt;
+
+                optDiv.appendChild(radio);
+                optDiv.appendChild(textSpan);
+
+                optDiv.onclick = () => {
+                    userState.answers[index] = optIndex;
+                    showQuestion(index); // re-render options
+                    updateQuestionGridStatus();
+                };
+
+                optContainer.appendChild(optDiv);
+            });
+
+            // Nav Buttons
+            document.getElementById('btn-prev').disabled = index === 0;
+            
+            if (index === TOTAL_QUESTIONS - 1) {
+                document.getElementById('btn-next').classList.add('hidden');
+            } else {
+                document.getElementById('btn-next').classList.remove('hidden');
+            }
+
+            updateQuestionGridStatus();
+        }
+
+        // Navigasi
+        document.getElementById('btn-prev').addEventListener('click', () => {
+            if(currentQuestionIndex > 0) showQuestion(currentQuestionIndex - 1);
+        });
+        document.getElementById('btn-next').addEventListener('click', () => {
+            if(currentQuestionIndex < TOTAL_QUESTIONS - 1) showQuestion(currentQuestionIndex + 1);
+        });
+
+        // Toggle Modal Daftar Soal
+        const modalQ = document.getElementById('question-modal');
+        document.getElementById('btn-question-list').addEventListener('click', () => {
+            modalQ.classList.remove('hidden');
+            modalQ.classList.add('flex');
+            updateQuestionGridStatus();
+        });
+        document.getElementById('close-modal').addEventListener('click', () => {
+            modalQ.classList.add('hidden');
+            modalQ.classList.remove('flex');
+        });
+
+        /**
+         * Floating Camera Drag Logic (Mouse & Touch)
+         */
+        const cam = document.getElementById('floating-camera');
+        let isDragging = false;
+        let currentX;
+        let currentY;
+        let initialX;
+        let initialY;
+        let xOffset = 0;
+        let yOffset = 0;
+
+        function dragStart(e) {
+            if (e.type === "touchstart") {
+                initialX = e.touches[0].clientX - xOffset;
+                initialY = e.touches[0].clientY - yOffset;
+            } else {
+                initialX = e.clientX - xOffset;
+                initialY = e.clientY - yOffset;
+            }
+            if (e.target === cam || cam.contains(e.target)) {
+                isDragging = true;
+            }
+        }
+
+        function dragEnd(e) {
+            initialX = currentX;
+            initialY = currentY;
+            isDragging = false;
+        }
+
+        function drag(e) {
+            if (isDragging) {
+                e.preventDefault(); // prevent scrolling while dragging
+                if (e.type === "touchmove") {
+                    currentX = e.touches[0].clientX - initialX;
+                    currentY = e.touches[0].clientY - initialY;
+                } else {
+                    currentX = e.clientX - initialX;
+                    currentY = e.clientY - initialY;
+                }
+
+                // Boundaries
+                const rect = cam.getBoundingClientRect();
+                const maxX = window.innerWidth - rect.width;
+                const maxY = window.innerHeight - rect.height;
+
+                // Hitung posisi absolut berdasarkan awal letak flex/fixed
+                // Kamera diposisikan fixed right-4 top-20. X = 0 berarti di posisi awalnya.
+                
+                // Set offset and translate
+                xOffset = currentX;
+                yOffset = currentY;
+                
+                setTranslate(currentX, currentY, cam);
+            }
+        }
+
+        function setTranslate(xPos, yPos, el) {
+            el.style.transform = `translate3d(${xPos}px, ${yPos}px, 0)`;
+        }
+
+        cam.addEventListener("touchstart", dragStart, false);
+        cam.addEventListener("touchend", dragEnd, false);
+        cam.addEventListener("touchmove", drag, {passive: false});
+        cam.addEventListener("mousedown", dragStart, false);
+        document.addEventListener("mouseup", dragEnd, false);
+        document.addEventListener("mousemove", drag, false);
+
+        /**
+         * SISTEM ANTI CURANG (STRICT & DEBOUNCE)
+         */
+        // 1. Blokir Keyboard Shortcut (Ctrl+C, Ctrl+V, F12 dll)
+        document.addEventListener('keydown', (e) => {
+            if (e.key === "F12" || 
+               (e.ctrlKey && e.shiftKey && e.key === "I") || 
+               (e.ctrlKey && e.shiftKey && e.key === "J") || 
+               (e.ctrlKey && e.key === "U") ||
+               (e.ctrlKey && e.key === "C") ||
+               (e.ctrlKey && e.key === "V")) {
+                e.preventDefault();
+            }
+        });
+
+        // 2. Deteksi Pindah Tab (Debounce logic)
+        let cheatTimeout = null;
+        
+        function handleCheat() {
+            if (userState.status !== 'EXAM') return;
+            
+            if (cheatTimeout) return; // Debounce aktif
+            cheatTimeout = setTimeout(() => { cheatTimeout = null; }, 2000); // 2 detik jeda debounce
+
+            userState.warnings++;
+            playSiren();
+
+            document.getElementById('warning-counter-display').innerHTML = `<i class="fas fa-exclamation-triangle mr-1"></i> Peringatan: ${userState.warnings}/3`;
+
+            if (userState.warnings >= MAX_WARNINGS) {
+                autoSubmit('Diskualifikasi (Curang)');
+            } else {
+                showModal({
+                    title: 'Peringatan Pelanggaran!',
+                    message: `Anda terdeteksi keluar dari layar ujian! \n(Peringatan ${userState.warnings} dari ${MAX_WARNINGS}). \n\nKembali ke ujian untuk mematikan alarm.`,
+                    type: 'error'
+                });
+            }
+        }
+
+        document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'hidden') {
+                handleCheat();
+            } else {
+                // If they come back before modal is closed, we don't strictly stop siren here 
+                // because they must click "Mengerti" on the modal.
+            }
+        });
+
+        window.addEventListener('blur', () => {
+            // Some browsers trigger blur on elements inside iframe or specific inputs, 
+            // but for full-screen strict CBT, window blur is a strong indicator of Alt-Tab.
+            handleCheat();
+        });
+
+
+        /**
+         * Pengumpulan Ujian
+         */
+        function submitBtnHandler() {
+            const answered = userState.answers.filter(a => a !== null).length;
+            const unanswered = TOTAL_QUESTIONS - answered;
+            
+            showModal({
+                title: 'Kumpulkan Jawaban?',
+                message: `Anda telah menjawab ${answered} soal.\nBelum dijawab: ${unanswered} soal.\n\nApakah Anda yakin ingin menyelesaikan ujian?`,
+                type: 'confirm',
+                showCancel: true,
+                okText: 'Ya, Selesai',
+                onOk: () => {
+                    processSubmission('Selesai Normal');
+                }
+            });
+        }
+
+        document.getElementById('btn-finish-top').addEventListener('click', submitBtnHandler);
+        document.getElementById('btn-finish-mobile').addEventListener('click', submitBtnHandler);
+
+        function autoSubmit(statusString) {
+            closeModal(); // tutup modal lain
+            if(userState.status === 'FINISHED' || userState.status === 'DISQUALIFIED') return;
+            processSubmission(statusString);
+        }
+
+        async function processSubmission(statusString) {
+            clearInterval(timerInterval);
+            stopSiren();
+            userState.status = (statusString.includes('Curang')) ? 'DISQUALIFIED' : 'FINISHED';
+            
+            // Hitung Skor
+            let correctCount = 0;
+            userState.answers.forEach((ans, idx) => {
+                if(ans === questionsData[idx].answer) correctCount++;
+            });
+            userState.score = Math.round((correctCount / TOTAL_QUESTIONS) * 100);
+
+            // Matikan Kamera
+            if(stream) {
+                stream.getTracks().forEach(track => track.stop());
+            }
+
+            // Keluar Fullscreen jika bisa
+            if (document.exitFullscreen && document.fullscreenElement) {
+                document.exitFullscreen().catch(()=>{});
+            }
+
+            // UI Loading Hasil
+            switchView('result-view');
+            const answeredCount = userState.answers.filter(a => a !== null).length;
+
+            const payload = {
+                timestamp: new Date().toISOString(),
+                nama: userState.name,
+                kelas: userState.kelas,
+                skor: userState.score,
+                status: statusString,
+                terjawab: answeredCount,
+                totalSoal: TOTAL_QUESTIONS,
+                jawaban: userState.answers
+            };
+
+            try {
+                // Dummy Fetch ke Webhook Google Sheets
+                // Untuk uji coba, ini tidak akan error walau fetch diblokir CORS karena kita catch
+                await fetch(GOOGLE_SCRIPT_URL, {
+                    method: 'POST',
+                    mode: 'no-cors', // Biasanya Apps Script butuh ini jika POST sederhana
+                    headers: {
+                        'Content-Type': 'text/plain' // Diubah ke text/plain untuk menghindari Preflight CORS Error di browser
+                    },
+                    body: JSON.stringify(payload)
+                });
+            } catch (e) {
+                console.log("Error saat mengirim ke Spreadsheet:", e);
+            }
+
+            // Simulasi Delay untuk Efek Realistis
+            setTimeout(() => {
+                document.getElementById('result-loading').classList.add('hidden');
+                document.getElementById('result-content').classList.remove('hidden');
+
+                // Update UI Hasil
+                document.getElementById('res-name').innerText = userState.name;
+                document.getElementById('res-class').innerText = userState.kelas;
+                document.getElementById('res-status').innerText = statusString;
+                document.getElementById('res-answered').innerText = `${answeredCount}/${TOTAL_QUESTIONS}`;
+                document.getElementById('res-score').innerText = userState.score;
+
+                if(userState.status === 'DISQUALIFIED') {
+                    document.getElementById('res-status').classList.add('text-red-600');
+                    document.getElementById('result-icon').className = 'fas fa-times text-4xl';
+                    document.getElementById('result-icon-container').className = 'w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4 bg-red-100 text-red-600';
+                    document.getElementById('result-subtitle').innerText = 'Data tersimpan dengan catatan pelanggaran.';
+                    document.getElementById('result-subtitle').className = 'text-red-600 font-semibold mb-6';
+                    document.getElementById('result-title').innerText = 'DISKUALIFIKASI';
+                }
+
+            }, 2000);
+        }
+
+    </script>
+</body>
+</html>
